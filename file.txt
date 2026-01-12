@@ -2,6 +2,12 @@ project creation
 1. npx create-next-app@latest
 2. npm install tailwindcss @tailwindcss/postcss daisyui@latest
 3. npm i @supabase/ssr @supabase/supabase-js
+4. npm install @fortawesome/fontawesome-svg-core \
+               @fortawesome/free-solid-svg-icons \
+               @fortawesome/free-regular-svg-icons \
+               @fortawesome/free-brands-svg-icons \
+               @fortawesome/react-fontawesome
+
 
 Error
 1. Cannot find module or type declarations for side-effect import of './globals.css'.

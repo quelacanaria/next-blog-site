@@ -1,10 +1,10 @@
-import { Header } from '@/components/Header'
+// import { Header } from '@/app/components/Header'
 import React from 'react'
 
 export default function page() {
   return (
     <>
-      <Header/>
+      {/* <Header user={null} /> */}
     </>
   )
 }

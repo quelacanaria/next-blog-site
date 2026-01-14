@@ -4,6 +4,8 @@ import "./globals.css";
 //fontawesome
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
+import StoreProvider from "../AppRedux/StoreProvider";
+import { AuthContext } from "@/AppContext/AuthContext";
 config.autoAddCss = false;
 
 
@@ -28,10 +30,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+   
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
+        <AuthContext>
+         <StoreProvider>
+          {children}
+         </StoreProvider>
+        </AuthContext>
       </body>
     </html>
+    
   );
 }

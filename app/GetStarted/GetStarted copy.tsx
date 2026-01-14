@@ -1,33 +1,68 @@
 "use client";
-import React, { ReactNode} from 'react'
+import React, { useEffect } from 'react'
+import { User } from '@supabase/supabase-js';
 import { FormEvent, useState } from "react";
+// import { Header } from "@/app/components/Header";
+import { getSupabaseBrowserClient } from '@/lib/supabase/browser-client';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
-import { useAuth } from '@/AppContext/AuthContext';
-
+export type EmailPasswordDemoProps = {
+    user: User|null;
+}
 type Mode = 'signup'|'signin';
-export default function GetStarted() {
-    const { user, signIn, signUp, logout, fetchUser } = useAuth();
+export default function GetStarted({user}: EmailPasswordDemoProps) {
     const [mode, setMode] = useState<Mode>('signin');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [status, setStatus] = useState<ReactNode>();
-    fetchUser();
+    const [status, setStatus] = useState('');
+    const [currentUser, setCurrentUser] = useState<User | null>(user);
+    const supabase = getSupabaseBrowserClient();
+    useEffect(() => {
+        const {data: listener} = supabase.auth.onAuthStateChange(
+            (_event, session) => {
+                setCurrentUser(session?.user ?? null);
+            });
+        return () => {listener?.subscription.unsubscribe()};
+    }, [supabase])
     const handleSubmit = async(event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const response = mode === 'signin' ? signIn(email, password) : signUp(email, password);
-        setStatus(await response);
+        if(mode == 'signup'){
+            const {data, error} = await supabase.auth.signUp({
+                email, password
+            });
+            if(error){
+                setStatus(error.message);
+            }else{
+                setStatus('Account created successfully!');
+                setEmail('');
+                setPassword('');
+                setMode('signin');
+            }
+        }else{
+            const {data, error} = await supabase.auth.signInWithPassword({
+                email, password
+            });  
+            if(error){
+                setStatus(error.message);
+            }else{
+                setStatus('Successfully LoggedIn!!');
+                setEmail('');
+                setPassword('');
+            }
+        }
     }
     const handleSignOut = async() => {
-        const response = logout();
-        setStatus(await response);
+        await supabase.auth.signOut();
+        setCurrentUser(null);
+        setStatus("Successfully Signed Out!");
     }    
   return (
     <>
+        {/* <Header user={currentUser} /> */}
          <nav className="navbar bg-primary text-primary-content ">
                 <a className="p-5 text-ghost text-xl font-semibold">Blog Site</a>
-                {user &&(<p>{user.email}</p>)}
-                {user &&(
+                {currentUser &&(<p>{currentUser.email}</p>)}
+                {currentUser &&(
                 <div className="dropdown dropdown-bottom dropdown-end ">
                     <div tabIndex={0} role="button" className="btn btn-soft btn-primary btn-circle"><FontAwesomeIcon icon={faUser} size="lg" /></div>
                     <ul tabIndex={-1} className="dropdown-content menu bg-primary rounded-box z-1 w-30 p-2 shadow-sm ">
@@ -38,7 +73,7 @@ export default function GetStarted() {
                 )}        
             </nav>  
 
-            {!user && ( <>
+            {!currentUser && ( <>
             {mode === 'signin' && (
             <div className="hero bg-base-200 min-h-140 ">
                 <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
@@ -72,12 +107,12 @@ export default function GetStarted() {
                 </div>
             </div>)}   
             </>)}
-            {user &&(
+            {currentUser &&(
                 <div className="card bg-primary text-primary-content w-96">
                     <div className="card-body">
-                        <h2 className="card-title">{user.email}</h2>
-                        <p>{user.id}</p>
-                        <p>{user.last_sign_in_at}</p>
+                        <h2 className="card-title">{currentUser.email}</h2>
+                        <p>{currentUser.id}</p>
+                        <p>{currentUser.last_sign_in_at}</p>
                     </div>
                 </div>
             )}

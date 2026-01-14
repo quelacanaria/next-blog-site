@@ -1,4 +1,4 @@
-import { createBrowserClient, createServerClient } from "@supabase/ssr";
+import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 function getEnvironmentVariables(){
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;

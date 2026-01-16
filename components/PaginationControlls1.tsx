@@ -20,7 +20,7 @@ const per_page = searchParams.get('per_page') ?? '5';
         <button className='btn btn-primary text-white p-1'
         disabled={!hasPrevPage}
         onClick={() => {
-            router.push(`pagination1/?page=${Number(page) -1}&per_page=${per_page}`)
+            router.push(`/PrivatePosts/?page=${Number(page) -1}&per_page=${per_page}`)
         }} >prev-page</button>
         <div>
         {page}/{Math.ceil(10/Number(per_page))}
@@ -28,7 +28,7 @@ const per_page = searchParams.get('per_page') ?? '5';
         <button className='btn btn-primary text-white p-1' 
         disabled={!hasNextPage}
         onClick={() => {
-            router.push(`/pagination1/?page=${Number(page) + 1}&per_page=${per_page}`)
+            router.push(`/PrivatePosts/?page=${Number(page) + 1}&per_page=${per_page}`)
         }}>
             next-page
         </button>

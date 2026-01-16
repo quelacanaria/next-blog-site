@@ -2,7 +2,7 @@
 import {useSelector, useDispatch} from 'react-redux';
 import {FormEvent, useEffect, useState} from 'react';
 import { useAuth } from '@/AppContext/AuthContext';
-import GetStarted from '../GetStarted/GetStarted';
+import GetStarted from '../../components/GetStarted';
 import { useAddPost1Mutation, useDeletePost1Mutation, 
     useUpdatePost1Mutation, useFetchPostsQuery } from '@/AppRedux/Slices/postApi';
 import { Header } from '@/components/Header';

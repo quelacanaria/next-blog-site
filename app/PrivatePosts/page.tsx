@@ -2,10 +2,10 @@
 
 import { useSearchParams } from 'next/navigation';
 import { useFetchPostsQuery, useUpdatePost1Mutation, useDeletePost1Mutation } from '@/AppRedux/Slices/postApi';
-import { PaginationControlls } from './PaginationControlls';
+import { PaginationControlls } from '../../components/PaginationControlls1';
 import { useAuth } from '@/AppContext/AuthContext';
 import { FormEvent, useState } from 'react';
-import GetStarted from '../GetStarted/GetStarted';
+import GetStarted from '../../components/GetStarted';
 export default function Home() {  
 const [user_id, setUser_id] = useState<string|null>(null)
 const [update, setUpdate] = useState<any|null>(null);

@@ -2,11 +2,11 @@
 
 import { useSearchParams } from 'next/navigation';
 import { useFetchPostsQuery, useUpdatePost1Mutation, useDeletePost1Mutation } from '@/AppRedux/Slices/postApi';
-import { PaginationControlls } from '../../components/PaginationControlls1';
+import { PaginationControlls1 } from '../../components/PaginationControlls1';
 import { useAuth } from '@/AppContext/AuthContext';
 import { FormEvent, useState } from 'react';
 import GetStarted from '../../components/GetStarted';
-export default function Home() {  
+export default function PrivatePosts() {  
 const [user_id, setUser_id] = useState<string|null>(null)
 const [update, setUpdate] = useState<any|null>(null);
 const [title, setTitle] = useState('');
@@ -61,7 +61,7 @@ const [description, setDescription] = useState('');
                     </div>
             </div>
             ))) : (<>{!user ? <GetStarted/>:<p>No posts found.</p>}</>)}
-            <PaginationControlls hasNextPage={end < posts.length} hasPrevPage={start > 0} />
+            <PaginationControlls1 hasNextPage={end < posts.length} hasPrevPage={start > 0} />
         </div>
 
         {update !== null && (

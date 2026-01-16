@@ -7,7 +7,7 @@ interface PaginationControllProps{
     hasPrevPage: boolean
 }
 
-export const PaginationControlls: FC<PaginationControllProps> = ({
+export const PaginationControlls1: FC<PaginationControllProps> = ({
     hasNextPage,
     hasPrevPage
 } ) => {

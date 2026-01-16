@@ -6,7 +6,7 @@ import { PaginationControlls } from '../../components/PaginationControlls';
 import { useAuth } from '@/AppContext/AuthContext';
 import { FormEvent, useState } from 'react';
 import GetStarted from '../../components/GetStarted';
-export default function Home() {  
+export default function NewsFeed() {  
 
 const [user_id, setUser_id] = useState<string|null>(null)
 const [update, setUpdate] = useState<any|null>(null);

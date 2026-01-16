@@ -1,49 +1,31 @@
 "use client";
 import React, { ReactNode} from 'react'
 import { FormEvent, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from '@/AppContext/AuthContext';
-
+import { useRouter } from 'next/navigation';
 type Mode = 'signup'|'signin';
 export default function GetStarted() {
-    const { user, signIn, signUp, logout, fetchUser } = useAuth();
+    const { user, signIn, signUp, status, setStatus } = useAuth();
     const [mode, setMode] = useState<Mode>('signin');
+    const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [status, setStatus] = useState<ReactNode>();
-    fetchUser();
+    const router = useRouter();
     const handleSubmit = async(event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const response = mode === 'signin' ? signIn(email, password) : signUp(email, password);
+        const response = mode === 'signin' ? signIn(email, password) : signUp(name, email, password);
         setStatus(await response);
+        setEmail('');
+        setPassword('');
     }
-    const handleSignOut = async() => {
-        const response = logout();
-        setStatus(await response);
-    }    
   return (
     <>
-         <nav className="navbar bg-primary text-primary-content ">
-                <a className="p-5 text-ghost text-xl font-semibold">Blog Site</a>
-                {user &&(<p>{user.email}</p>)}
-                {user &&(
-                <div className="dropdown dropdown-bottom dropdown-end ">
-                    <div tabIndex={0} role="button" className="btn btn-soft btn-primary btn-circle"><FontAwesomeIcon icon={faUser} size="lg" /></div>
-                    <ul tabIndex={-1} className="dropdown-content menu bg-primary rounded-box z-1 w-30 p-2 shadow-sm ">
-                        <li className="hover:bg-white hover:text-primary rounded-sm font-bold "><a>Settings</a></li>
-                        <li className="hover:bg-white hover:text-primary rounded-sm font-bold" onClick={handleSignOut}><a>Logout</a></li>
-                    </ul>
-                </div>     
-                )}        
-            </nav>  
-
             {!user && ( <>
             {mode === 'signin' && (
             <div className="hero bg-base-200 min-h-140 ">
                 <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
                     <div className="card-body">
-                        {status &&(<p className='text-green-600'>{status}</p>)} 
+                        {status &&(status)} 
                         <form className="fieldset" onSubmit={handleSubmit} >
                         <label className="label">Email</label>
                         <input type="email" className="input" placeholder="Email" value={email} onChange={event=>setEmail(event.target.value)} />
@@ -59,8 +41,10 @@ export default function GetStarted() {
             <div className="hero bg-base-200 min-h-140">
                 <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
                 <div className="card-body">
-                    {status &&(<p className='text-red-600'>{status}</p>)} 
+                    {status &&(status)} 
                     <form className="fieldset" onSubmit={handleSubmit}>
+                    <label className="label">Name</label>
+                    <input type="text" className="input" placeholder="Name" value={name} onChange={event=>setName(event.target.value)} required/>
                     <label className="label">Email</label>
                     <input type="email" className="input" placeholder="Email" value={email} onChange={event=>setEmail(event.target.value)}/>
                     <label className="label">Password</label>
@@ -72,15 +56,18 @@ export default function GetStarted() {
                 </div>
             </div>)}   
             </>)}
-            {user &&(
-                <div className="card bg-primary text-primary-content w-96">
-                    <div className="card-body">
-                        <h2 className="card-title">{user.email}</h2>
-                        <p>{user.id}</p>
-                        <p>{user.last_sign_in_at}</p>
+            {user && (
+            <div className="hero bg-base-200 min-h-screen">
+                <div className="hero-content text-center">
+                    <div className="max-w-md">
+                    <h1 className="text-5xl font-bold">Welcome {user && user.user_metadata.name }</h1>
+                    <p className="py-6">
+                        To empower individuals to share their stories, ideas, and expertise with the world by providing an intuitive, accessible, and engaging platform for blogging.
+                    </p>
+                    <button className="btn btn-primary" onClick={() => router.replace('/CreatePosts')}>Create Post</button>
                     </div>
                 </div>
-            )}
+            </div>)}
                   
     </>
   )

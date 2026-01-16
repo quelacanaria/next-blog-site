@@ -8,7 +8,7 @@ project creation
                @fortawesome/free-brands-svg-icons \
                @fortawesome/react-fontawesome
 5. npm i react-redux @reduxjs/toolkit
-
+6. npm i react-router-dom
 
 Error
 1. Cannot find module or type declarations for side-effect import of './globals.css'.

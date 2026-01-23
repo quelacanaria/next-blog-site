@@ -1,5 +1,4 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { User } from '@supabase/supabase-js';
 
 export interface Post {
   id: number;
@@ -8,6 +7,7 @@ export interface Post {
   user_id: string;
   Public: string;
   author: string;
+  image: string|null;
 }
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;

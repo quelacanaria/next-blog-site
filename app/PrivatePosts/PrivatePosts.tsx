@@ -30,10 +30,10 @@ const [description, setDescription] = useState('');
     const {error} = await supabase.storage.from('postsImages')
                                           .remove([filePath])
   }
-  const handleRemovePost = async(postId:any) => {
+  const handleRemovePost = async(post:any) => {
         try{
-            const res:any = await deletePost1(postId);
-            if(update.image){await deleteImageFromStorage(update.image)}
+            const res:any = await deletePost1(post.id);
+            if(post.image){await deleteImageFromStorage(post.image)}
             console.log(res.message)
         }catch(error:any){
             console.log(error.message)
@@ -88,7 +88,7 @@ const [description, setDescription] = useState('');
                             {post.user_id === user.id &&(
                             <>
                                 <button className="btn btn-primary" onClick={() => setUpdate(post)}>Update</button>
-                                <button className="btn btn-error" onClick={() => handleRemovePost(post.id)} >Delete</button>
+                                <button className="btn btn-error" onClick={() => handleRemovePost(post)} >Delete</button>
                             </>)}
                             </div>
                         </div>

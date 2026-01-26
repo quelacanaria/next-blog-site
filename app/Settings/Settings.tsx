@@ -2,12 +2,13 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/AppContext/AuthContext';
+import GetStarted from '@/components/GetStarted';
 export default function Settings() {
     const router = useRouter();
     const {user} = useAuth();
-    if(!user)return;
-  return (
+ return (
         <>
+        {user ? (
             <div className="hero bg-base-200 p-4 sm:p-5 min-h-150" >
                 <div className="card w-full max-w-sm sm:max-w-md bg-base-100 card-xl shadow-sm">
                 <div className="card-body">
@@ -18,7 +19,7 @@ export default function Settings() {
                     </div>
                 </div>
                 </div>
-            </div>
+            </div>): <GetStarted/>}
         </>
   )
 }

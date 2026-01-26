@@ -64,7 +64,7 @@ export default function GetStarted() {
                     <p className="py-6">
                         To empower individuals to share their stories, ideas, and expertise with the world by providing an intuitive, accessible, and engaging platform for blogging.
                     </p>
-                    <button className="btn btn-primary" onClick={() => router.replace('/CreatePosts')}>Create Post</button>
+                    <button className="btn btn-primary" onClick={() => router.replace('/Post/CreatePosts')}>Create Post</button>
                     </div>
                 </div>
             </div>)}

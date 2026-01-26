@@ -13,5 +13,6 @@ project creation
 Error
 1. Cannot find module or type declarations for side-effect import of './globals.css'.
 -change TS version 6 to TS version 5.9
-
+1. timestampz and id - I exported and imported the sql table of database then the id is not in primary haha
+and the createdAt is not in datenow the type is at text haha
 1. Redux - can allow us to globally handle state

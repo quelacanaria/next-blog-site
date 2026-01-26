@@ -35,12 +35,12 @@ export const postsApi = createApi({
   endpoints: (builder) => ({
     
     fetchPosts: builder.query<Post[], void>({
-      query: () => 'posts?select=*',
+      query: () => 'posts?select=*&order=created_at.desc',
       providesTags: ['Post'],
     }),
 
     fetchComments: builder.query<Comment[], void>({
-      query: () => 'comments?select=*',
+      query: () => 'comments?select=*&order=created_at.asc',
       providesTags: ['Comment'],
     }),
     

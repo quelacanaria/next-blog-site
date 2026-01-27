@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile, faFont, faImage, faUser } from "@fortawesome/free-solid-svg-icons";
 import { deleteImage, UploadImage } from '@/lib/utils/UploadImage';
 import GetStarted from '@/components/GetStarted';
+import Dropdown from '@/components/Dropdown';
 
 export default function page() {
     const {id} = useParams();
@@ -40,6 +41,14 @@ export default function page() {
             if(comment.image){await deleteImage(comment.image)}
         }catch(error:any){console.log(error.message)}
     }
+    const handleClickOpenFormText=(comment:any)=>{
+        setUpdate(comment); 
+        setEditingId(comment.id);
+    }
+    const handleClickOpenFormImage=(comment:any)=>{
+        setUpdate(comment); 
+        setEditingIdImg(comment.id);
+    }
     const handleUpdateCommentText = async(e:FormEvent<HTMLFormElement>)=>{
         e.preventDefault();
         try{await updateComment1(update)
@@ -48,7 +57,7 @@ export default function page() {
     }
     const handleUpdateCommentImage = async(e:FormEvent<HTMLFormElement>)=>{
         e.preventDefault();
-        try{if(!user)return;
+        try{if(!user || picture === null)return;
             const image = await UploadImage(picture, user.id);
             if(update.image){await deleteImage(update.image)}
             await updateComment1({...update, image})
@@ -57,8 +66,8 @@ export default function page() {
     }
   return (<>
   {user ? (
-    <div className="flex flex-col gap-2 items-center p-5">
-         <div key={post.id} className="hero bg-base-200 p-5 ">
+    <div className="flex flex-col gap-2 items-center p-0">
+         <div key={post.id} className="hero bg-base-200 p-5">
                     <div className="card w-full max-w-sm sm:max-w-md bg-base-100 card-xl shadow-sm cursor-pointer" >
                         <div className="card-body">
                             <div className="flex items-center gap-2">
@@ -97,8 +106,14 @@ export default function page() {
                                             <FontAwesomeIcon icon={faUser} size="xs" />
                                         </div>
                                         <p className="text-sm font-medium">{comment.author}</p>
+                                        {user.user_metadata.name === comment.author &&(
+                                        <Dropdown sizes='xs' items={[
+                                            {label:'edit', onClick:()=>handleClickOpenFormText(comment)},
+                                            {label: 'editImages', onClick:()=>handleClickOpenFormImage(comment)},
+                                            {label:'delete', onClick:()=>handleDeleteComment(comment)}
+                                        ]} buttonLabel='' />)}
                                     </div>
-                                    {comment.image && (<img className='h-10' src={comment.image} />)}
+                                    {comment.image && editingId !== comment.id && editingIdImg !== comment.id &&(<img className='h-10' src={comment.image} />)}
                                     {comment.id !== editingId && (<p className="text-sm text-gray-700">{comment.comment}</p>)}
                                     {update && editingId === comment.id && (<>
                                             <form onSubmit={handleUpdateCommentText}>
@@ -121,13 +136,6 @@ export default function page() {
                                             <button className='btn btn-link' >Update</button>
                                             <button className='btn btn-link' onClick={()=>setEditingIdImg(null)}>Cancel</button>
                                         </form>
-                                    )}
-                                    {user.user_metadata.name === comment.author && comment.id !== editingId && comment.id !== editingIdImg &&(
-                                        <>
-                                            <button className='btn btn-link' onClick={()=>handleDeleteComment(comment)} >Delete</button>
-                                            <button className='btn btn-link' onClick={()=>{ setUpdate(comment); setEditingId(comment.id)}}>UpdateText</button>
-                                            <button className='btn btn-link' onClick={()=>{ setUpdate(comment); setEditingIdImg(comment.id)}}>UpdateImage</button>
-                                        </>
                                     )}
                                 </div>
                             </div>))}

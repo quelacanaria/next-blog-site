@@ -16,13 +16,6 @@ const router = useRouter();
 const [deletePost1] = useDeletePost1Mutation();
 const { data: posts = [] } = useFetchPostsQuery();
 const {data:comments=[]}=useFetchCommentsQuery();
-  const handleRemovePost = async(post:any) => {
-        try{const res:any = await deletePost1(post.id);
-            if(post.image){await deleteImage(post.image)}
-            console.log(res.message)
-        }catch(error:any){
-            console.log(error.message)
-        }}
 
   const searchParams = useSearchParams();
   const page = Number(searchParams.get('page') ?? 1);

@@ -39,3 +39,23 @@ export const UploadImage = async(file: File|null, userId: string) => {
 
     return data.publicUrl
 }
+
+export const UploadMultipleImage = async(files: File[], userId: string) => {
+    if(!files || files.length === 0)return [];
+
+    const urls: string[]=[];
+
+    for(const file of files){
+        const ext=file.name.split('.').pop();
+        const fileName=`${userId}-${crypto.randomUUID()}.${ext}`
+        const {error}=await supabase.storage.from('postsImages')
+                                            .upload(fileName, file);
+        if(error)throw error;
+        const {data}=supabase.storage.from('postsImages')
+                                     .getPublicUrl(fileName);
+
+        urls.push(data.publicUrl);
+    }
+    
+    return urls;
+}

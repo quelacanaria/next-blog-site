@@ -1,29 +1,43 @@
 "use client";
-import {FormEvent, useState} from 'react';
+import {FormEvent, useRef, useState} from 'react';
 import { useAuth } from '@/AppContext/AuthContext';
 import GetStarted from '../../../components/GetStarted';
 import { useAddPost1Mutation} from '@/AppRedux/Slices/postApi';
-import { UploadImage } from '@/lib/utils/UploadImage';
+import { UploadMultipleImage } from '@/lib/utils/UploadImage';
 
 export default function CreatePost(){
     const [addPost1] = useAddPost1Mutation();
     const {user} = useAuth();
-    const [picture, setPicture] = useState<File|null>(null);
-    const [preview, setPreview] = useState<string|null>(null);
+    const [pictures, setPictures] = useState<File[]>([]);
+    const [preview, setPreview] = useState<string[]>([]);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [Public, setPublic] = useState('');
+    const inputRef = useRef<HTMLInputElement|null>(null);
 
+    const inputRemoveFileRef = (index:number) => {
+        URL.revokeObjectURL(preview[index]);
+        setPictures((prev) => prev.filter((_, i)=> i !== index));
+        setPreview((prev)=> prev.filter((_, i)=> i !== index))
+       
+        if(inputRef.current){
+            const dataTransfer=new DataTransfer();
+            pictures.forEach((file)=>dataTransfer.items.add(file));
+            inputRef.current.files=dataTransfer.files;
+        }
+        
+
+    }
     const handleCreatePost = async(e:FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try{if(!title || !description || !user ) return;
-            const image = await UploadImage(picture, user.id)
+            const image = await UploadMultipleImage(pictures, user.id)
             const author = user.user_metadata.name;
             await addPost1({title, description, user_id:user.id, Public, author, image});
             setTitle('');
             setDescription('');
-            setPicture(null);
-            setPreview(null);
+            setPictures([]);
+            setPreview([]);
         }catch(error:any){console.log(error.message)}
     }
     return(
@@ -40,16 +54,22 @@ export default function CreatePost(){
                     <input type="radio" name="radio-1" className="radio mr-1" value={Public} onChange={() => setPublic('private')}/>
                     private</label>
                     <label htmlFor="">Image</label>
-                    {preview === null ? '': <img src={preview} />}
+                    {preview.length === 0 ? '':
+                        <div className='flex flex-wrap gap-2'>
+                            {preview.map((image, i)=>(
+                                <div className='relative w-fit'key={i}>
+                                    <img  src={image} className='rounded block w-40' />
+                                    <button onClick={()=>inputRemoveFileRef(i)} className='btn btn-xs btn-soft btn-neutral font-bold absolute top-0 right-0' type='button' >X</button>
+                                </div>
+                            ))}
+                        </div>
+                    }
                     <input 
                         onChange={(e) => {
-                            if(e.target.files && e.target.files[0]){
-                                setPicture(e.target.files[0])
-                                setPreview(URL.createObjectURL(e.target.files[0]))
-                            }
+                            setPictures(Array.from(e.target.files || []));
+                            setPreview(Array.from(e.target.files || []).map(file=>URL.createObjectURL(file)))
                         }}
-                        type="file" 
-                        accept='image/*' 
+                        type="file" accept='image/*' multiple ref={inputRef}
                         className="file-input file-input-bordered file-input-primary w-full file-input-sm" 
                     />
                     <label htmlFor="">Title</label>

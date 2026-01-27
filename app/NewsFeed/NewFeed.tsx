@@ -10,6 +10,7 @@ import { deleteAllImage, deleteImage, UploadImage } from '@/lib/utils/UploadImag
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
+import Dropdown from '@/components/Dropdown';
 
 export default function NewsFeed() {  
   const router = useRouter();
@@ -36,7 +37,7 @@ export default function NewsFeed() {
   const entries = posts.slice(start, end);
   return (
     <>{user ? (
-        <div className="flex flex-col gap-2 items-center p-10">
+        <div className="flex flex-col gap-2 items-center p-0">
          {entries && user && (   
             entries.filter((post: any) => post.Public === 'public')
             .map((post) => (
@@ -46,18 +47,17 @@ export default function NewsFeed() {
                             <div className="flex items-center gap-2">
                                 <div className="btn btn-soft btn-primary btn-circle"><FontAwesomeIcon icon={faUser} size="sm" /></div>
                                 <p>{post.author}</p>
+                                {post.user_id === user.id &&(
+                                <Dropdown sizes='md' items={[
+                                    { label: 'edit', onClick: ()=>router.push(`/Post/UpdatePosts/${post.id}`) },
+                                    { label: 'delete', onClick: ()=>router.push(`/Post/DeletePosts/${post.id}`)}
+                                ]} buttonLabel={''} />)}
                             </div>
                             {post.image &&(<img src={post.image} alt={post.image} />)}
                             <h2 className="card-title">{post.title}</h2>
                             <p>{post.description}</p>
                             <div className="justify-end card-actions">
                                 <button className='btn btn-accent' onClick ={() => router.push(`/Post/ViewPosts/${post.id}`)}>View</button>
-                            {post.user_id === user.id &&(
-                            <>
-                                {/* <button className="btn btn-primary" onClick={() => {setUpdate(post); setScreen('edit'); setPicture(null);}}>Update</button> */}
-                                <button className="btn btn-primary" onClick={() => {router.push(`/Post/UpdatePosts/${post.id}`)}}>Update</button>
-                                <button className="btn btn-error" onClick={() => handleRemovePost(post)} >Delete</button>
-                            </>)}
                             </div>
                         </div>
                         <p className='p-3'>{comments.filter(c=>c.post_id === post.id).length} comment</p>

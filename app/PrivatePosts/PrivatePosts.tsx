@@ -7,7 +7,8 @@ import { useAuth } from '@/AppContext/AuthContext';
 import GetStarted from '../../components/GetStarted';
 import { deleteImage } from '@/lib/utils/UploadImage';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faUser } from '@fortawesome/free-solid-svg-icons';
+import Dropdown from '@/components/Dropdown';
 
 export default function PrivatePosts() {  
 const {user} = useAuth();
@@ -34,7 +35,7 @@ const {data:comments=[]}=useFetchCommentsQuery();
   return (
     <>
     {user ? (
-        <div className="flex flex-col gap-2 items-center p-10">
+        <div className="flex flex-col gap-2 items-center p-0">
          {entries && user && (   
             entries.filter((post: any) => post.user_id === user.id && post.Public === 'private')
             .map((post) => (
@@ -44,17 +45,18 @@ const {data:comments=[]}=useFetchCommentsQuery();
                             <div className="flex items-center gap-2">
                                 <div className="btn btn-soft btn-primary btn-circle"><FontAwesomeIcon icon={faUser} size="sm" /></div>
                                 <p>{post.author}</p>
+                                {post.user_id === user.id &&(
+                                    <Dropdown sizes='md' items={[
+                                        {label:'edit', onClick:()=>router.push(`/Post/UpdatePosts/${post.id}`) },
+                                        {label:'delete', onClick:()=>router.push(`/Post/DeletePosts/${post.id}`)}
+                                    ]} buttonLabel=''/>
+                                )}
                             </div>
                             {post.image &&(<img src={post.image} />)}
                             <h2 className="card-title">{post.title}</h2>
                             <p>{post.description}</p>
                             <div className="justify-end card-actions">
                                 <button className='btn btn-accent' onClick ={() => router.push(`/Post/ViewPosts/${post.id}`)}>View</button>
-                            {post.user_id === user.id &&(
-                            <>
-                                <button className="btn btn-primary" onClick={() => router.push(`/Post/UpdatePosts/${post.id}`)}>Update</button>
-                                <button className="btn btn-error" onClick={() => handleRemovePost(post)} >Delete</button>
-                            </>)}
                             </div>
                         </div>
                         <p className='p-3'>{comments.filter(c=>c.post_id === post.id).length} comment</p>

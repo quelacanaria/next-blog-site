@@ -4,7 +4,7 @@ import { useFetchPostsQuery, useUpdatePost1Mutation } from "@/AppRedux/Slices/po
 import GetStarted from "@/components/GetStarted";
 import { deleteImage, UploadImage } from "@/lib/utils/UploadImage";
 import { useParams, useRouter } from "next/navigation"
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useEffect } from "react";
 
 export default function page(){
     const {id}=useParams();
@@ -17,6 +17,7 @@ export default function page(){
     const [picture, setPicture] = useState<File|null>(null);
     const [screen, setScreen] = useState<"edit"|"image">("edit");
     const [preview, setPreview] = useState<string|null>(null);
+
     if(!update)return setUpdate(post);
     const handleUpdatePost=async(e:FormEvent<HTMLFormElement>)=>{
         e.preventDefault();
@@ -26,7 +27,7 @@ export default function page(){
     }
     const handleUpdateImagePost = async(e:FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        try{if(!user)return;
+        try{if(!user || picture===null)return;
             const image = await UploadImage(picture, user.id);
             if(update.image){await deleteImage(update.image)}
             await updatePost1({...update, image: image}) 
@@ -46,10 +47,13 @@ export default function page(){
                             <input type="radio" name="radio-1" className="radio mr-1" value={'private'} checked={update.Public === 'private'} onChange={(e) => setUpdate({...update, Public: e.target.value,})}/>
                             private</label>
                             <label>Image</label>
-                            {update.image ? (
+                            {post && update.image ? (
                                 <>
                                 <img src={update.image} alt={update.image} />
-                                <button onClick={(e)=>{setScreen('image'); setUpdate(update)}} className="btn btn-primary" >Update Image</button>
+                                <div className="justify-end card-actions">
+                                    <button className='btn btn-error' type='button' onClick={() => {router.push(`/Post/DeleteImage/${post.id}`)}} >Delete Image</button>
+                                    <button onClick={(e)=>{setScreen('image'); setUpdate(update)}} className="btn btn-primary" >Update Image</button>
+                                </div>
                                 </>
                                 )
                                     :<button onClick={(e)=>{setScreen('image'); setUpdate(update)}} className='w-full btn btn-primary'>Add Image</button>}

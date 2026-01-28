@@ -30,7 +30,7 @@ export default function page(){
               <div className='hero bg-base-200 p-5'>
                 <div className="card w-full max-w-sm sm:max-w-md bg-base-100 card-xl shadow-sm cursor-pointer" >
                   <div className="card-body">
-                    <h3 className="text-error text-lg card-title">Are you sure you want to delete this post?</h3>
+                    <h3 className="text-error text-lg card-title">Are you sure you want to delete this Image?</h3>
                     {post.image && (<img src={post.image} />)}
                     <div className="justify-end card-actions">
                       <button className='btn btn-primary' onClick={()=>router.back()}>Back</button>

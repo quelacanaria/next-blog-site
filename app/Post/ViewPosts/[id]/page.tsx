@@ -1,7 +1,7 @@
 "use client";
-import React, { FormEvent, useState } from 'react'
-import { useParams } from 'next/navigation';
-import { useFetchPostsQuery, useAddComment1Mutation, useFetchCommentsQuery, useDeleteComment1Mutation, useUpdateComment1Mutation } from '@/AppRedux/Slices/postApi';
+import React, { FormEvent, useRef, useState } from 'react'
+import { useParams, useRouter } from 'next/navigation';
+import { useFetchPostsQuery, useAddComment1Mutation, useFetchCommentsQuery, useDeleteComment1Mutation, useUpdateComment1Mutation, useUpdatePost1Mutation } from '@/AppRedux/Slices/postApi';
 import { useAuth } from '@/AppContext/AuthContext';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile, faFont, faImage, faUser } from "@fortawesome/free-solid-svg-icons";
@@ -11,20 +11,34 @@ import Dropdown from '@/components/Dropdown';
 
 export default function page() {
     const {id} = useParams();
+    const router = useRouter();
     const {data: posts = []}=useFetchPostsQuery();
     const post = posts.find((p:any) => p.id === id);
     const {user} = useAuth();
     const {data: comments = [] } = useFetchCommentsQuery();
     const [addComment1] = useAddComment1Mutation();
     const [deleteComment1] = useDeleteComment1Mutation();
-    const [updateComment1] = useUpdateComment1Mutation();
+    const [updateComment1]=useUpdateComment1Mutation();
     const [comment, setComment] = useState('');
     const [picture, setPicture] = useState<File|null>(null);
     const [update, setUpdate] = useState<any|null>(null);
     const [editingId, setEditingId] = useState<string | null>(null);
-    const [editingIdImg, setEditingIdImg] = useState<string | null>(null);
+    const [preview, setPreview] = useState<string | null>(null);
+     const [preview1, setPreview1] = useState<string | null>(null);
+    const inputRef = useRef<HTMLInputElement|null>(null);
     if(!post) return <p>no post</p>;
     
+    const removeFile = () =>{
+        if(inputRef.current){inputRef.current.value=''}
+        setPreview(null);
+        setPreview1(null);
+    }
+    const handleDeleteImage = async(comment:any)=>{
+            try{if(comment.image){await deleteImage(comment.image)}
+                await updateComment1({...comment, image: null})
+                setEditingId(null);
+            }catch(error:any){console.log(error.message)}
+        }
     const handleSubmitComment = async(e:FormEvent<HTMLFormElement>) => {
         e.preventDefault();  
         try{if(!user || !post|| comment.trim() === '')return;
@@ -34,6 +48,7 @@ export default function page() {
             await addComment1({comment, post_id:post.id, author, image})
             setComment('');
             setPicture(null);
+            setPreview(null);
         }catch(error){console.log(error)}
     }
     const handleDeleteComment = async(comment:any) => {
@@ -45,23 +60,20 @@ export default function page() {
         setUpdate(comment); 
         setEditingId(comment.id);
     }
-    const handleClickOpenFormImage=(comment:any)=>{
-        setUpdate(comment); 
-        setEditingIdImg(comment.id);
-    }
     const handleUpdateCommentText = async(e:FormEvent<HTMLFormElement>)=>{
         e.preventDefault();
-        try{await updateComment1(update)
-            setEditingId(null);
-        }catch(error:any){console.log(error.message)}
-    }
-    const handleUpdateCommentImage = async(e:FormEvent<HTMLFormElement>)=>{
-        e.preventDefault();
-        try{if(!user || picture === null)return;
-            const image = await UploadImage(picture, user.id);
-            if(update.image){await deleteImage(update.image)}
-            await updateComment1({...update, image})
-            setEditingIdImg(null);
+        try{
+            if(user && picture !== null){
+                const image = await UploadImage(picture, user.id);
+                if(update.image){await deleteImage(update.image)}
+                await updateComment1({...update, image})
+                setEditingId(null);
+                setPreview1(null);
+            }else if(user && picture === null){
+                await updateComment1(update)
+                setEditingId(null);
+                setPreview1(null);
+            }
         }catch(error:any){console.log(error.message)}
     }
   return (<>
@@ -90,10 +102,17 @@ export default function page() {
                                         <input type="file" accept='image/*' onChange={(e) => {
                                             if(e.target.files && e.target.files[0]){
                                                 setPicture(e.target.files[0]);
+                                                setPreview(URL.createObjectURL(e.target.files[0]))
                                             }
-                                        }} hidden/>
+                                        }} ref={inputRef} hidden/>
                                     </label>
                                 </div>
+                                {preview !== null &&(
+                                    <div className='relative p-2 w-fit' >
+                                    <img src={`${preview}`} className='w-50 rounded'/>
+                                    <button onClick={removeFile} className='btn btn-soft btn-md btn-primary font-bold absolute top-0 right-0' type='button' >x</button>
+                                    </div>
+                                )}
                                 <button className="btn btn-primary btn-sm mt-2 w-full">
                                     Comment
                                 </button>
@@ -109,34 +128,39 @@ export default function page() {
                                         {user.user_metadata.name === comment.author &&(
                                         <Dropdown sizes='xs' items={[
                                             {label:'edit', onClick:()=>handleClickOpenFormText(comment)},
-                                            {label: 'editImages', onClick:()=>handleClickOpenFormImage(comment)},
                                             {label:'delete', onClick:()=>handleDeleteComment(comment)}
                                         ]} buttonLabel='' />)}
                                     </div>
-                                    {comment.image && editingId !== comment.id && editingIdImg !== comment.id &&(<img className='h-10' src={comment.image} />)}
+                                    {comment.image && editingId !== comment.id &&(<img className='w-50' src={comment.image} />)}
                                     {comment.id !== editingId && (<p className="text-sm text-gray-700">{comment.comment}</p>)}
                                     {update && editingId === comment.id && (<>
                                             <form onSubmit={handleUpdateCommentText}>
-                                                <input value={update.comment} onChange={(e)=>setUpdate({...update, comment: e.target.value})} className='input text-sm text-gray-700' />
+                                                {preview1 === null ? (
+                                                    update.image && (
+                                                    <div className='relative p-2 w-fit' >
+                                                      <img src={`${update.image}`} className='w-50 rounded'/>
+                                                      <button onClick={()=>handleDeleteImage(comment)} className='btn btn-soft btn-md btn-primary font-bold absolute top-0 right-0' type='button' >x</button>
+                                                    </div>
+                                                )):(
+                                                    <div className='relative p-2 w-fit' >
+                                                      <img src={`${preview1}`} className='w-50 rounded'/>
+                                                      <button onClick={removeFile} className='btn btn-soft btn-md btn-primary font-bold absolute top-0 right-0' type='button' >x</button>
+                                                    </div>
+                                                )}
+                                                <div className='flex items-center gap-2'>
+                                                    <input value={update.comment} onChange={(e)=>setUpdate({...update, comment: e.target.value})} className='input text-sm text-gray-700' />
+                                                    <label className='btn btn-primary'><FontAwesomeIcon icon={faFile} size='lg' /><input onChange={(e) => {
+                                                        if(e.target.files && e.target.files[0]){
+                                                            setPicture(e.target.files[0]);
+                                                            setPreview1(URL.createObjectURL(e.target.files[0]))
+                                                        }
+                                                    }} type='file' accept='image/*' hidden/></label>
+                                                </div>
                                                 <button className='btn btn-link' >Update</button>
                                                 <button className='btn btn-link' onClick={()=>setEditingId(null)} >Cancel</button>
                                             </form>
                                             </>
                                         )}
-                                    {update && editingIdImg === comment.id &&(
-                                        <form onSubmit={handleUpdateCommentImage} >
-                                            <div className='flex items-center gap-2'>
-                                            <input type='text' value={update.comment} onChange={e => setUpdate({...update, comment: e.target.value})} className='input text-sm text-gray-700'/>
-                                            <label className='btn btn-primary'><FontAwesomeIcon icon={faFile} size='lg' /><input onChange={(e) => {
-                                                if(e.target.files && e.target.files[0]){
-                                                    setPicture(e.target.files[0]);
-                                                }
-                                            }} type='file' accept='image/*' hidden/></label>
-                                            </div>
-                                            <button className='btn btn-link' >Update</button>
-                                            <button className='btn btn-link' onClick={()=>setEditingIdImg(null)}>Cancel</button>
-                                        </form>
-                                    )}
                                 </div>
                             </div>))}
                         </div>
@@ -146,3 +170,5 @@ export default function page() {
     ): <GetStarted/>}
  </> )
 }
+
+

@@ -7,7 +7,7 @@ export interface Post {
   user_id: string;
   Public: string;
   author: string;
-  image: string[];
+  image: string|null;
 }
 export interface Comment{
   id:string;
@@ -37,6 +37,12 @@ export const postsApi = createApi({
     fetchPosts: builder.query<Post[], void>({
       query: () => 'posts?select=*&order=created_at.desc',
       providesTags: ['Post'],
+    }),
+
+    fetchPostById: builder.query<Post, string>({
+      query:(id)=>`posts?id=eq.${id}&select=*`,
+      transformResponse:(response:Post[])=>response[0],
+      providesTags:(result, error, id)=>[{type: 'Post', id}],
     }),
 
     fetchComments: builder.query<Comment[], void>({
@@ -106,6 +112,7 @@ export const postsApi = createApi({
 
 export const {
   useFetchPostsQuery,
+  useFetchPostByIdQuery,
   useFetchCommentsQuery,
   useAddPost1Mutation,
   useAddComment1Mutation,

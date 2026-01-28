@@ -20,14 +20,7 @@ export default function NewsFeed() {
   const { data: posts = [] } = useFetchPostsQuery();
   const {data: comments=[]}=useFetchCommentsQuery();
   const {user} = useAuth();
-  const handleRemovePost = async(post:any) => {
-        try{if(post.id){await deleteAllImage(post.id)}
-            await deleteAllComments1(post.id)
-            if(post.image)(await deleteImage(post.image))
-            const res:any = await deletePost1(post.id)
-            console.log(res.message)
-        }catch(error:any){console.log(error.message)}
-    }
+  
   const searchParams = useSearchParams();
   const page = Number(searchParams.get('page') ?? 1);
   const perPage = Number(searchParams.get('per_page') ?? 5);

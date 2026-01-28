@@ -39,6 +39,12 @@ export const postsApi = createApi({
       providesTags: ['Post'],
     }),
 
+    fetchPostById: builder.query<Post, string>({
+      query:(id)=>`posts?id=eq.${id}&select=*`,
+      transformResponse:(response:Post[])=>response[0],
+      providesTags:(result, error, id)=>[{type: 'Post', id}],
+    }),
+
     fetchComments: builder.query<Comment[], void>({
       query: () => 'comments?select=*&order=created_at.asc',
       providesTags: ['Comment'],
@@ -106,6 +112,7 @@ export const postsApi = createApi({
 
 export const {
   useFetchPostsQuery,
+  useFetchPostByIdQuery,
   useFetchCommentsQuery,
   useAddPost1Mutation,
   useAddComment1Mutation,

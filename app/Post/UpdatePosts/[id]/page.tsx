@@ -18,8 +18,10 @@ export default function page(){
     const [picture, setPicture] = useState<File|null>(null);
     const [screen, setScreen] = useState<"edit"|"image">("edit");
     const [preview, setPreview] = useState<string|null>(null);
-
-    if(!update)return setUpdate(post);
+    useEffect(()=>{
+        if(post && !update)return setUpdate(post);
+    }, [post, update])
+    if(!update)return<p>loading...</p>
     const handleUpdatePost=async(e:FormEvent<HTMLFormElement>)=>{
         e.preventDefault();
         try{await updatePost1(update);

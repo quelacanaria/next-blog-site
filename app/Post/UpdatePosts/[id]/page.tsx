@@ -1,6 +1,7 @@
 "use client";
 import { useAuth } from "@/AppContext/AuthContext";
 import { useFetchPostsQuery, useUpdatePost1Mutation } from "@/AppRedux/Slices/postApi";
+import Dropdown from "@/components/Dropdown";
 import GetStarted from "@/components/GetStarted";
 import { deleteImage, UploadImage } from "@/lib/utils/UploadImage";
 import { useParams, useRouter } from "next/navigation"
@@ -17,8 +18,10 @@ export default function page(){
     const [picture, setPicture] = useState<File|null>(null);
     const [screen, setScreen] = useState<"edit"|"image">("edit");
     const [preview, setPreview] = useState<string|null>(null);
-
-    if(!update)return setUpdate(post);
+    useEffect(()=>{
+        if(post && !update)return setUpdate(post);
+    }, [post, update])
+    if(!update)return<p>loading...</p>
     const handleUpdatePost=async(e:FormEvent<HTMLFormElement>)=>{
         e.preventDefault();
         try{await updatePost1(update);
@@ -49,10 +52,13 @@ export default function page(){
                             <label>Image</label>
                             {post && update.image ? (
                                 <>
-                                <img src={update.image} alt={update.image} />
-                                <div className="justify-end card-actions">
-                                    <button className='btn btn-error' type='button' onClick={() => {router.push(`/Post/DeleteImage/${post.id}`)}} >Delete Image</button>
-                                    <button onClick={(e)=>{setScreen('image'); setUpdate(update)}} className="btn btn-primary" >Update Image</button>
+                                <div className='w-full relative p-2 w-fit' >
+                                    <img className="w-full" src={update.image} alt={update.image} />
+                                    <div className='absolute top-2 right-2'>
+                                    <Dropdown sizes="md" items={[
+                                            { label: 'Delete Image', onClick:() => {router.push(`/Post/DeleteImage/${post.id}`)}},
+                                            { label: 'Update Image', onClick:()=>{setScreen('image'); setUpdate(update)}}
+                                        ]} buttonLabel={""} /></div>
                                 </div>
                                 </>
                                 )

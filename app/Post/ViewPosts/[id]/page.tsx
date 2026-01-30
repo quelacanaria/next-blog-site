@@ -157,7 +157,7 @@ export default function page() {
                                                     }} type='file' accept='image/*' hidden/></label>
                                                 </div>
                                                 <button className='btn btn-link' >Update</button>
-                                                <button className='btn btn-link' onClick={()=>setEditingId(null)} >Cancel</button>
+                                                <button className='btn btn-link' onClick={()=>{setEditingId(null); setPicture(null); setPreview1(null)}} >Cancel</button>
                                             </form>
                                             </>
                                         )}

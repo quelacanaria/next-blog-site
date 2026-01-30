@@ -33,7 +33,7 @@ export default function Dropdown({buttonLabel, items, sizes='md'}:DropDownProps)
       <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-32 p-2 shadow-sm">
         {items.map((item, index) => (
           <li key={index}>
-            <button onClick={item.onClick}>{item.label}</button>
+            <button type="button" onClick={item.onClick}>{item.label}</button>
           </li>
         ))}
       </ul>

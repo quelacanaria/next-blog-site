@@ -32,6 +32,7 @@ export default function page() {
         if(inputRef.current){inputRef.current.value=''}
         setPreview(null);
         setPreview1(null);
+        setPicture(null);
     }
     const handleDeleteImage = async(comment:any)=>{
             try{if(comment.image){await deleteImage(comment.image)}

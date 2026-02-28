@@ -12,7 +12,7 @@ export default function CreatePost(){
     const [preview, setPreview] = useState<string|null>(null);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    const [Public, setPublic] = useState('');
+    const [Public, setPublic] = useState<'public'|'private'>('public');
 
     const handleCreatePost = async(e:FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -34,10 +34,10 @@ export default function CreatePost(){
             <div className="card w-full max-w-sm sm:max-w-md bg-base-100 card-xl shadow-sm">
                 <form className="card-body" onSubmit={handleCreatePost}>
                     <label htmlFor="" className='mr-2'>
-                    <input type="radio" name="radio-1" className="radio mr-1" value={Public} onChange={() => setPublic('public')} />
+                    <input type="radio" name="radio-1" className="radio mr-1" checked={Public === 'public'} value={'public'} onChange={() => setPublic('public')} />
                     public</label>
                     <label htmlFor="" className='mr-2'>
-                    <input type="radio" name="radio-1" className="radio mr-1" value={Public} onChange={() => setPublic('private')}/>
+                    <input type="radio" name="radio-1" className="radio mr-1" checked={Public === 'private'} value={'private'} onChange={() => setPublic('private')}/>
                     private</label>
                     <label htmlFor="">Image</label>
                     {preview === null ? '': <img src={preview} />}

@@ -17,7 +17,7 @@ export default function NewsFeed() {
   const [user_id, setUser_id] = useState<string|null>(null);
   const [deletePost1] = useDeletePost1Mutation();
   const [deleteAllComments1] = useDeleteAllComments1Mutation();
-  const { data: posts = [] } = useFetchPostsQuery();
+  const { data: posts = [], refetch } = useFetchPostsQuery();
   const {data: comments=[]}=useFetchCommentsQuery();
   const {user} = useAuth();
   
@@ -28,6 +28,10 @@ export default function NewsFeed() {
   const end = start + perPage;
     const post = posts.filter((post)=> post.Public === 'public');
   const entries = posts.slice(start, end);
+
+  useEffect(() => {
+  refetch();
+}, []);
   return (
     <>{user ? (
         <div className="flex flex-col gap-2 items-center p-0">
@@ -53,7 +57,7 @@ export default function NewsFeed() {
                                 <button className='btn btn-accent' onClick ={() => router.push(`/Post/ViewPosts/${post.id}`)}>View</button>
                             </div>
                         </div>
-                        <p className='p-3'>{comments.filter(c=>c.post_id === post.id).length} comment</p>
+                        {/* <p className='p-3'>{comments.filter(c=>c.post_id === post.id).length} comment</p> */}
                         <button className="btn btn-block" onClick ={() => router.push(`/Post/ViewPosts/${post.id}`)}>Comment</button>
                     </div>
             </div>

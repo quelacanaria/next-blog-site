@@ -1,5 +1,5 @@
 "use client";
-import React, { FormEvent, useRef, useState } from 'react'
+import React, { FormEvent, useEffect, useRef, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation';
 import { useFetchPostsQuery, useAddComment1Mutation, useFetchCommentsQuery, useDeleteComment1Mutation, useUpdateComment1Mutation, useUpdatePost1Mutation } from '@/AppRedux/Slices/postApi';
 import { useAuth } from '@/AppContext/AuthContext';
@@ -15,7 +15,7 @@ export default function page() {
     const {data: posts = []}=useFetchPostsQuery();
     const post = posts.find((p:any) => p.id === id);
     const {user} = useAuth();
-    const {data: comments = [] } = useFetchCommentsQuery();
+    const {data: comments = [], refetch } = useFetchCommentsQuery();
     const [addComment1] = useAddComment1Mutation();
     const [deleteComment1] = useDeleteComment1Mutation();
     const [updateComment1]=useUpdateComment1Mutation();
@@ -77,6 +77,11 @@ export default function page() {
             }
         }catch(error:any){console.log(error.message)}
     }
+
+    useEffect(() => {
+        refetch();
+    }, []);
+
   return (<>
   {user ? (
     <div className="flex flex-col gap-2 items-center p-0">

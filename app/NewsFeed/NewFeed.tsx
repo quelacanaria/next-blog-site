@@ -17,8 +17,8 @@ export default function NewsFeed() {
   const [user_id, setUser_id] = useState<string|null>(null);
   const [deletePost1] = useDeletePost1Mutation();
   const [deleteAllComments1] = useDeleteAllComments1Mutation();
-  const { data: posts = [], refetch } = useFetchPostsQuery();
-  const {data: comments=[]}=useFetchCommentsQuery();
+  const { data: posts = [], refetch: refetchPosts } = useFetchPostsQuery();
+  const {data: comments=[], refetch: refetchComments}=useFetchCommentsQuery();
   const {user} = useAuth();
   
   const searchParams = useSearchParams();
@@ -30,7 +30,8 @@ export default function NewsFeed() {
   const entries = posts.slice(start, end);
 
   useEffect(() => {
-  refetch();
+  refetchPosts();
+  refetchComments();
 }, []);
   return (
     <>{user ? (

@@ -57,7 +57,7 @@ export default function NewsFeed() {
                                 <button className='btn btn-accent' onClick ={() => router.push(`/Post/ViewPosts/${post.id}`)}>View</button>
                             </div>
                         </div>
-                        {/* <p className='p-3'>{comments.filter(c=>c.post_id === post.id).length} comment</p> */}
+                        <p className='p-3'>{comments.filter(c=>c.post_id === post.id).length} comment</p>
                         <button className="btn btn-block" onClick ={() => router.push(`/Post/ViewPosts/${post.id}`)}>Comment</button>
                     </div>
             </div>
